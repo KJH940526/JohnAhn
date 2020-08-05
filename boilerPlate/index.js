@@ -4,6 +4,8 @@ const port = 5000     //포트번호
 
 const bodyParser = require('body-parser')
 
+const config = require('./config/key')
+
 //application/x-www-form-urlencode 처럼 온 타입으로 온 데이터를 분석한다
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -17,7 +19,7 @@ const mongoose = require('mongoose')
 
 // https://mongoosejs.com/docs/deprecations.html //use 설정에대한 설명이 있음
                                                                                                     //{}를 객체, []를 배열
-mongoose.connect('mongodb+srv://JWTEX:TIGER@jwt-rkkz2.mongodb.net/<dbname>?retryWrites=true&w=majority',{
+mongoose.connect(config.mongoURI,{
   useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false
 }).then(()=>console.log('몽고DB 연결중...'))
   .catch(err => console.log(err))
