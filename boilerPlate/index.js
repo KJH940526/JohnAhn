@@ -51,6 +51,7 @@ app.post('/register',(req,res)=>{
   // json형식으로 되어있기 때문에 postman을 사용할때도 json으로 보낸다
   //json 형식으로 된 데이터가 들어있을수 있게하는건 bodyparser를 이용했기 분석했기 떄문
   
+  //save를 하기전에 패스워드를 암호회해줘야한다.
   //save는 몽고db 메소드이고 save를 하면 User모델에 저장이된다.
   //그 이후에 콜백함수가 온다.
   user.save((err, userInfo) => {
