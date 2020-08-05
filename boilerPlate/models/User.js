@@ -69,6 +69,21 @@ userSchema.pre('save', function( next ) {
   }
 })
 
+userSchema.methods.comparePassword = function(plainPasswrod, cb){
+
+  //plainPassword 123456 같은 비밀번호를 암호화된 비밀번호와 비교해야하는데
+  //암호화된 비밀번호를 복구할수 없기떄문에
+  //plainPassword는 입력하는 password이고
+  //this.passwrod는 데이터베이스에 있는 암호화된 패스워드이다.
+                                                //err이고 isMatch는 true이다
+  bcrypt.compare(plainPassword, this.password, function(err, isMatch){
+    //비밀번호가 같지 않으면 콜백함수로 err를 전달하고
+    if(err) return cb(err),
+    cb(null, isMatch) //에러는 없고 isMatch = ture이다.
+  })
+}
+
+
 
 //스키마를 모델로 감싸준다.
   //Uesr객체 생성      //DB에 들어갈 모델의 이름, 스키마                          

@@ -65,6 +65,47 @@ app.post('/register',(req,res)=>{
 
 
 
+app.post('/login',(req,res)=>{
+  //1. 데이터베이스 안에서 요청한 E-mail 찾기
+  //객체 User안에 있는 User모델을 가져온다.
+  //const User = mongoose.model('User',userSchema)
+  
+  //요청된 이메일을 데이터베이스에서 있는지 찾는다.
+  //email은 데이터베이스에 있는거고
+  //req.body.email은 클라이언트에서 요청받은 이메일
+                                      //user정보가 들어있음
+  User.findOne({ email: req.body.email}, (err, user)=>{
+    console.log(req.body.email) //클라이언트에서 요청하는
+    if(!user){
+      return res.json({
+        loginSuccess: false,
+        message : "제공된 이메일에 해당하는 유저가 없습니다."
+      })
+    }
+  //2. 데이트베이스 안에서 요청한 E-mail이 있다면 비밀번호가 같은지 확인
+  //요청된 이메일이 데이터 베이스 있다면 비밀번호가 맞는 비밀번호인지 확인
+  //user에는 user정보가 들어있음
+  //req.body.password는 클라이언트에서 입력한 비밀번호
+                                              //비밀번호가 맞다면 isMatch를 가져옴
+  user.comparePassword(req.body.password, (err, isMatch)=>{
+    //매소드를 유저 model에서 만듬
+    //비밀번호가 틀리다.
+    if(!isMatch)
+    return res.json({ 
+      loginSuccess : false, 
+      message: "비밀번호가 틀렸습니다"
+    })
+    //3.비밀번호가 같다면 Token 생성
+    
+
+  })
+
+
+})
+})
+
+
+
 
 //포트번호 5000번에서 만들어진 app를 실행한다.
 app.listen(port, () => {
