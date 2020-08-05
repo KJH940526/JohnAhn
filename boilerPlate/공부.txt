@@ -1,0 +1,91 @@
+ //동기 비동기 콜백함수 https://pro-self-studier.tistory.com/89
+ //https://www.zerocho.com/category/NodeJS/post/58285e4840a6d700184ebd87
+ 
+ 2강 node.js와 express.js
+
+ nodejs는 javascript를 브라우저가 아닌 server side에서도
+ javascript를 사용하는 언어       https://nodejs.org/ko/
+
+ expressjs는 nodejs의 프레임워크  https://expressjs.com/ko/starter/hello-world.html
+
+ npm 패키지를 만들기위 해서 터미널에서 npm init 친다 => package.json이 만들어짐
+ 지금은 node모듈이 없음
+
+ express를 다운받기 위해서 npm install express --save를 하면
+ package.json에 디펜던시에 express가 추가되며, node_moudules이 만들어진다.
+
+---------------------------------------------------------------------------------------
+const express = require('express')  //express modules를 가져온다
+const app = express() //express 함수를 이용해서 새로운 express app을 만들고
+const port = 5000     //포트번호
+
+//  https://uhou.tistory.com/102 req객체와 res객체
+// '/'는 보내는 주소
+// req 는 말그대로 요청을 하는것이고
+// res 는 값읕 반환해준다고 생각을 하면된다.
+// 따라서 "/"는 주소이고 res를 통해서 hello wrold!를 보여준다
+app.get('/', (req, res) => {
+  res.send('Hello World!')
+})
+
+
+//포트번호 5000번에서 만들어진 app를 실행한다.
+app.listen(port, () => {
+  console.log(`http://localhost:${port}`)
+})
+
+실행을 하기 위해서는 node index.js를 커맨드창에서 쳐서 사용하든가
+package.json에 script에 "start": "node index.js"를 추가하여
+npm run start 라고 커맨드에 쳐서 사용이 가능하다.
+
+------------------------------------------------------------------
+ 3강 몽고 db연결
+
+ 몽고db 유저 생성 => 아이디랑 비밀번호를 기억해두어야 나중에 앱과 연결이 가능
+ex) 'mongodb+srv://JWTEX:TIGER@jwt-rkkz2.mongodb.net/<dbname>?retryWrites=true&w=majority'
+                  <아이디>:<비밀번호>
+
+https://mongoosejs.com/docs/index.html //몽구스 시작페이지
+https://mongoosejs.com/docs/deprecations.html //use 설정에대한 설명이 있음
+
+mongoose 알아보기 //https://mongoosejs.com/ 
+간단하게 몽고db를 편하게 쓸수 있게 해줌
+
+npm install mongoose --save 를 통해서 설치가능
+=> package.json에 mongoose 생기는거 확인
+
+----------------------------------------------------------------
+
+4장  MongoDB 모델과 스키마
+https://www.zerocho.com/category/MongoDB/post/59a1870210b942001853e250
+
+모델이란 무엇? 모델은 스키마를 감싸주는 역할
+A Mongoose model is a wrapper on the Mongoose schema.
+Mongoose model provides an interface to the 
+database for creating, querying, updating, deleting records, etc.
+
+스키마란 무엇? 
+A Mongoose schema defines the structure of the 
+document, default values, validators, etc.,
+
+------------------------------------------------------------------
+
+7장 BodyParser & PostMan & 회원 가입 기능
+Clinet - Server 통신하는 법
+
+//구글에 Request with Body  the JSON, buffer, string and URL encoded data 검색해보기
+
+Express를 통한 Client와 Server의 통신에는
+Requset 안에 Body가 있는데 JSON형식이나 urlencode형식으로 데이터가 넘오오는데
+Body 데이터를 분석(parse)해서 req.body로 출력해주는것
+분석해주기 위해서는 Body-parser라는 디펜던시가 필요하다
+npm install body-parser --save
+          
+// req 는 말그대로 요청을 하는것이고
+// res 는 값읕 반환해준다고 생각을 하면된다.
+
+
+
+
+
+
