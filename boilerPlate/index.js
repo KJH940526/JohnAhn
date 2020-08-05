@@ -18,12 +18,13 @@ const { User } = require('./models/User')
 const mongoose = require('mongoose')
 
 // https://mongoosejs.com/docs/deprecations.html //use 설정에대한 설명이 있음
-                                                                                                    //{}를 객체, []를 배열
+//{}를 객체, []를 배열  
+//개발 환경에서는 mongoURI는 key.js를 통해서 dev.js에 있는 mongoURI를 가져온거
+//config 객체 안에있는 mongoURI라는 속성에 접근
 mongoose.connect(config.mongoURI,{
   useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false
 }).then(()=>console.log('몽고DB 연결중...'))
   .catch(err => console.log(err))
-
 
 
 // '/'는 보내는 주소
