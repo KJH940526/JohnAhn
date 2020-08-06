@@ -81,7 +81,7 @@ userSchema.methods.comparePassword = function(plainPassword, cb){
   //plainPassword는 입력하는 password이고
   console.log('2번 client 입력 : ',plainPassword)
   //2번쨰로 실행됨
-  
+
   //plainPassword 입력한 비밀번호를 암호화된 비밀번호와 비교해야하는데
   //암호화된 비밀번호를 복구할수 없기떄문에
   //bcrypt로 암호화를 한 다음에 비교를한다.
@@ -110,9 +110,10 @@ userSchema.methods.generateToken = function(cb){
     //토큰을 왜 만든는가??
     //jsonwebtoken을 이용해서 token을 생성한다. => requrie
     //user._id는 User모델에 들어있는 _id(몽고디비 아이디)
-                      //뒤에있는 secretToken은 내가 만든 이름
+    
+    //https://www.npmjs.com/package/jsonwebtoken
+    //sing뒤에는 순수한 객체만 받기때문에 문자열 객체로 만들어줌  , 뒤에있는 secretToken은 내가 만든 이름
     var token = jwt.sign(user._id.toHexString(), 'secretToken')
-
     // user._id랑 secretToken이 합쳐져서 token이 생성된다.
     // 만들어진 token을 해성할떄 secretToken을 이용해서
     // user._id를 확인할수 있다.

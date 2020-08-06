@@ -49,11 +49,15 @@ app.get('/', (req, res) => {
 //라우트(경로) 라우팅(경로를 찾아가게 하는 과정)
 app.post('/register',(req,res)=>{
 
+  
+  console.log('clinet에서 입력: ',req.body)
+
   //회원 가입 할떄 필요한 정보들을 client에서 가져오면
   //그것들을 데이터베이스에 넣어준다.
   //객체와 인스턴스 클래스의 차이 다시 한번 보기
   //user라는 이름을가진 User객체의 인스턴스를 만들어준다.
   const user = new User(req.body)
+
   //req.body 안에는 json형식으로 아이디, password 이런식으로 들어온다.
   // json형식으로 되어있기 때문에 postman을 사용할때도 json으로 보낸다
   //json 형식으로 된 데이터가 들어있을수 있게하는건 bodyparser를 이용했기 분석했기 떄문
@@ -62,6 +66,9 @@ app.post('/register',(req,res)=>{
   //save는 몽고db 메소드이고 save를 하면 User모델에 저장이된다.
   //그 이후에 콜백함수가 온다.
   user.save((err, userInfo) => {
+
+    console.log('save메소드를 통해서 저장이 된 유저정보: ', userInfo)
+
     if(err) return res.json({ success: false, err })
     //status(200)은 성공했다는 뜻임
     return res.status(200).json({
@@ -73,7 +80,7 @@ app.post('/register',(req,res)=>{
 
 
 app.post('/login',(req,res)=>{
-  
+
   console.log("0번 클라이언트에서 입력: ",req.body)
   //1. 데이터베이스 안에서 요청한 E-mail 찾기
   //객체 User안에 있는 User모델을 가져온다.
