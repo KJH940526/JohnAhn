@@ -73,6 +73,7 @@ app.post('/register',(req,res)=>{
 
 
 app.post('/login',(req,res)=>{
+  
   console.log("0번 클라이언트에서 입력: ",req.body)
   //1. 데이터베이스 안에서 요청한 E-mail 찾기
   //객체 User안에 있는 User모델을 가져온다.
@@ -85,9 +86,11 @@ app.post('/login',(req,res)=>{
   //req.body.email은 클라이언트에서 요청받은 이메일
                                       //user정보가 들어있음
   User.findOne({ email: req.body.email}, (err, user)=> {
+
     console.log('1번 clinet 입력: ',req.body.email) //클라이언트에서 요청하는
     //1번으로 실행됨
     console.log('1-1번 DB에 있는 user정보: ',user)
+
     if(!user){
       return res.json({
         loginSuccess: false,
@@ -101,8 +104,10 @@ app.post('/login',(req,res)=>{
   //comparePasswrod                                              
                   //클라이언트비밀번호가 맞다면 isMatch를 가져옴
   user.comparePassword(req.body.password, (err, isMatch)=>{
+  //매소드를 유저 model에서 만듬
+    
     console.log('4번 index isMatch: ', isMatch)
-    //매소드를 유저 model에서 만듬
+    
     // console.log(req.body.password)
     if(!isMatch)
     return res.json({ 
@@ -115,8 +120,10 @@ app.post('/login',(req,res)=>{
     //https://www.npmjs.com/package/jsonwebtoken
                             //user에는 토큰이 생성된 유저정보가 있다.
     user.generateToken((err, user)=>{
+        //매소드를 유저 model에서 만듬
+
       console.log('9번 user정보: ',user)
-      //매소드를 유저 model에서 만듬
+      
         if(err) return res.status(400).send(err);
 
         //토큰을 저장한다. 어디에? 쿠키, 로컬스토리지에 저장하지만

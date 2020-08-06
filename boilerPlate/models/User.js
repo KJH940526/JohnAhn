@@ -77,15 +77,18 @@ userSchema.pre('save', function( next ) {
 
                   //만든메소드
 userSchema.methods.comparePassword = function(plainPassword, cb){
+
   //plainPassword는 입력하는 password이고
   console.log('2번 client 입력 : ',plainPassword)
   //2번쨰로 실행됨
+  
   //plainPassword 입력한 비밀번호를 암호화된 비밀번호와 비교해야하는데
   //암호화된 비밀번호를 복구할수 없기떄문에
   //bcrypt로 암호화를 한 다음에 비교를한다.
   //bcrypt.compare는 bcrypt에서 지원하는 함수
                                                    //err이고 isMatch는 참이면 true이다
   bcrypt.compare(plainPassword, this.password, function(err, isMatch){
+
     console.log('3번',isMatch)
     //this.passwrod는 데이터베이스에 있는 암호화된 패스워드이다.
     //비밀번호가 같지 않으면 콜백함수로 err를 전달하고
@@ -101,6 +104,7 @@ userSchema.methods.comparePassword = function(plainPassword, cb){
               //index에서 받는 인수가 위와 달리 콜백함수 하나뿐임
 userSchema.methods.generateToken = function(cb){
     var user = this; //this는 위에 있는 자기자신 userSchema를 뜻함
+
       console.log('5번 user._id: ', user._id)
 
     //토큰을 왜 만든는가??
@@ -117,10 +121,13 @@ userSchema.methods.generateToken = function(cb){
 
     //스키마에 있는 user.token을 우리가 만든 token에 집어 넣는다.
     user.token = token
+
     console.log('6번 유저토큰: ',user.token)
     console.log('7번 토큰: ',token)
+
                           //user에는 유저정보가 들어있음
     user.save(function(err, user) {
+
       console.log('8번 user정보: ',user._id)
       if(err) return cb(err) //에러가 있으면 에러를 전달해주고
       cb(null, user) //에러가 null이면 user정보를 콜백해준다.
