@@ -136,6 +136,30 @@ userSchema.methods.generateToken = function(cb){
 }
 
 
+//https://stackoverflow.com/questions/29664499/mongoose-static-methods-vs-instance-methods
+//객체생성 안하고 쓸거라서 statics로 생성
+                                    //userSchema에서 token을 가져옴
+userSchema.statics.findByToken = function(token, cb){
+  var user = this;
+
+  //토큰을 디코드 한다.
+  jwt.verify(token,'secretToken', function(err, decoded){
+    //user._id와 'secretToken'으로 인코드를 했기 떄문에
+    //decoded는 user._id가 나온다.
+    console.log("1번 models_user decoded",decoded)
+
+    //유저 아이디를 이용해서 유저를 찾은다음에
+    //클라이언트엣허 가져온 token과 db에 보관된 토큰이 일치하는지 확인
+
+    user.findOne({ "_id" : decoded, "token": token}, function(err, user){
+      //에러가 있으면은
+      if(err) return cb(err);
+      //만약 에러가 없다면은
+      cb(null, user)
+    })
+
+  })
+}
 
 
 
@@ -146,4 +170,7 @@ userSchema.methods.generateToken = function(cb){
 const User = mongoose.model('User',userSchema)
 
 //모델을 다른 파일에서 쓰기 위해서 
-module.exports = { User }
+module.exports =  {User} 
+
+// export default 인 것은  {} 없이 가져올수 있습니다
+// 하지만 default 아닌 것들은 {} 해서 가지고 와야 됩니다.

@@ -16,11 +16,14 @@ app.use(bodyParser.json());
 //쿠키에 저정하기 위해서는 express에서 제공!!!하는 
 //cookieparser가 필요하다
 app.use(cookieParser())
-
 //bodyparser 역시 express에서 제공한다.
+
+const { auth } = require('./middleware/auth')
 
 //유저 모델을 가져온다
 const { User } = require('./models/User')
+// export default 인 것은  {} 없이 가져올수 있습니다
+// 하지만 default 아닌 것들은 {} 해서 가지고 와야 됩니다.
 
 const mongoose = require('mongoose')
 
@@ -47,7 +50,7 @@ app.get('/', (req, res) => {
 
 //회원가입을 위한 라우트(경로)를 만듬
 //라우트(경로) 라우팅(경로를 찾아가게 하는 과정)
-app.post('/register',(req,res)=>{
+app.post('/api/users/register',(req,res)=>{
 
   
   console.log('clinet에서 입력: ',req.body)
@@ -79,7 +82,7 @@ app.post('/register',(req,res)=>{
 
 
 
-app.post('/login',(req,res)=>{
+app.post('/api/users/login',(req,res)=>{
 
   console.log("0번 클라이언트에서 입력: ",req.body)
   //1. 데이터베이스 안에서 요청한 E-mail 찾기
@@ -152,6 +155,51 @@ app.post('/login',(req,res)=>{
     })
   })
 })
+
+
+                            //auth라는 미들웨어
+//미들웨어란? '/api/users/auth라는 엔드포인트에
+//리퀘스트를 받은 다음에 콜백함수를 실행하기전에 
+//중간에서 실행된다.
+app.get('/api/users/auth', auth ,(req,res)=>{
+  console.log('미들웨어 통과')
+  //여기까지 미들웨어를 통과해 왔다는 이야기는
+  //Authentication이 True라는 말.
+  //따라서 True임을 클라이언트에 전달하기 위해서
+  res.status(200).json({
+    _id: req.user._id,
+    isAdmin: req.user.role === 0 ? false : true,
+    isAuth: true,
+    email: req.user.email,
+    name: req.user.name,
+    lastname: req.user.lastname,
+    role: req.user.role,
+    image: req.user.image,
+  })
+//role이 0이면 일반유저 role이 0이 아니면 관리자
+//어떤 페이지에서든지 유저정보를 주기 때문에 모든 데이터가 있어야한다.
+})
+
+
+//로그아웃
+//로그아웃 하려는 유저를 데이터베이스에 찾아서
+//데이터 베이스의 토큰을 삭제한다. 토큰을 삭제하는 이유는??
+//데이터베이스에서 토큰을 지우면 클라이언트에서 가져오는 토큰과
+//같지 않기 떄문에 인증이 되지 않는다.
+                          //auth가 있는 이유는 
+app.get("/api/users/logout", auth, (req,res)=>{
+  console.log("6번 req.user", req.user);
+      //_id는 db에 있는 _id   //req.user._id는 auth 미들웨어에서 가져온다.
+  User.findByIdAndUpdate({_id: req.user._id}, //검색대상
+    { token: ""},//수정대상 //아틀라스에서 확인하기
+    (err,user)=>{
+      if(err) return res.json({success: false, err})
+      return res.status(200).send({
+        success:true
+      })
+    })
+})
+
 
 
 
