@@ -162,7 +162,6 @@ app.post('/api/users/login',(req,res)=>{
 //리퀘스트를 받은 다음에 콜백함수를 실행하기전에 
 //중간에서 실행된다.
 app.get('/api/users/auth', auth ,(req,res)=>{
-  console.log('미들웨어 통과')
   //여기까지 미들웨어를 통과해 왔다는 이야기는
   //Authentication이 True라는 말.
   //따라서 True임을 클라이언트에 전달하기 위해서
@@ -186,6 +185,8 @@ app.get('/api/users/auth', auth ,(req,res)=>{
 //데이터 베이스의 토큰을 삭제한다. 토큰을 삭제하는 이유는??
 //데이터베이스에서 토큰을 지우면 클라이언트에서 가져오는 토큰과
 //같지 않기 떄문에 인증이 되지 않는다.
+//토큰이용해서 로그인 유지를 하기 때문에
+//토큰만 사라지면 자동으로 로그아웃이 된다. => 토큰을 지운다.
                           //auth가 있는 이유는 
 app.get("/api/users/logout", auth, (req,res)=>{
   console.log("6번 req.user", req.user);

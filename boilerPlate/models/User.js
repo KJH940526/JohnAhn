@@ -157,7 +157,6 @@ userSchema.statics.findByToken = function(token, cb){
       //만약 에러가 없다면은
       cb(null, user)
     })
-
   })
 }
 

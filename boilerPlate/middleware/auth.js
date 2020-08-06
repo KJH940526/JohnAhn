@@ -1,7 +1,7 @@
 const { User } = require('../models/User')
 
 let auth = (req, res, next)=> {
-
+  console.log("0번 클라이언트에 있는 토큰: ",req.cookies.x_auth)
   //인증처리를 하는곳
 
   // client 쿠키에서 토큰을 가져온다.
