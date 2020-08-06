@@ -5,6 +5,9 @@ const saltRounds = 10
 //솔트는 임의 문자열을 만들어줌
 //saltRounds는 문자열의 바이트의 수 npm
 
+const jwt = require('jsonwebtoken')
+const { json } = require('body-parser')
+
 //꼭 읽기
 //https://www.zerocho.com/category/MongoDB/post/59a1870210b942001853e250
 const userSchema = mongoose.Schema({
@@ -45,11 +48,13 @@ const userSchema = mongoose.Schema({
 //'save' 유저 모델에 save하기 전에 콜백함수를 실행한다.
 // 그러고 나서 next함수로 save로 보낸다
 userSchema.pre('save', function( next ) {
-    var user = this; //this는 위에 있는 userSchema를 뜻함
+    var user = this; //this는 위에 있는 자기자신 userSchema를 뜻함
+
+
+    //isModified는 몽구스 메소드
     //이것을 안해주면 회원가입할때 뿐만아니라 save를 할떄마다 
     //패스워드를 암호화를 한다. 따라서 
     //비밀번호를 바꿀떄만 암호화 되도록 한는법
-    //isModified는 몽구스 메소드
     if(user.isModified('password')){
     //비밀번호를 암호화시킨다.
     //솔트는 임의 문자열..  
@@ -67,21 +72,64 @@ userSchema.pre('save', function( next ) {
   } else {
       next()
   }
-})
+});
 
-userSchema.methods.comparePassword = function(plainPasswrod, cb){
 
-  //plainPassword 123456 같은 비밀번호를 암호화된 비밀번호와 비교해야하는데
-  //암호화된 비밀번호를 복구할수 없기떄문에
+                  //만든메소드
+userSchema.methods.comparePassword = function(plainPassword, cb){
   //plainPassword는 입력하는 password이고
-  //this.passwrod는 데이터베이스에 있는 암호화된 패스워드이다.
-                                                //err이고 isMatch는 true이다
+  console.log('2번 client 입력 : ',plainPassword)
+  //2번쨰로 실행됨
+  //plainPassword 입력한 비밀번호를 암호화된 비밀번호와 비교해야하는데
+  //암호화된 비밀번호를 복구할수 없기떄문에
+  //bcrypt로 암호화를 한 다음에 비교를한다.
+  //bcrypt.compare는 bcrypt에서 지원하는 함수
+                                                   //err이고 isMatch는 참이면 true이다
   bcrypt.compare(plainPassword, this.password, function(err, isMatch){
+    console.log('3번',isMatch)
+    //this.passwrod는 데이터베이스에 있는 암호화된 패스워드이다.
     //비밀번호가 같지 않으면 콜백함수로 err를 전달하고
-    if(err) return cb(err),
+    if(err) return cb(err)
     cb(null, isMatch) //에러는 없고 isMatch = ture이다.
-  })
+  });
+};
+
+
+
+
+                  //만든메소드
+              //index에서 받는 인수가 위와 달리 콜백함수 하나뿐임
+userSchema.methods.generateToken = function(cb){
+    var user = this; //this는 위에 있는 자기자신 userSchema를 뜻함
+      console.log('5번 user._id: ', user._id)
+
+    //토큰을 왜 만든는가??
+    //jsonwebtoken을 이용해서 token을 생성한다. => requrie
+    //user._id는 User모델에 들어있는 _id(몽고디비 아이디)
+                      //뒤에있는 secretToken은 내가 만든 이름
+    var token = jwt.sign(user._id.toHexString(), 'secretToken')
+
+    // user._id랑 secretToken이 합쳐져서 token이 생성된다.
+    // 만들어진 token을 해성할떄 secretToken을 이용해서
+    // user._id를 확인할수 있다.
+    // user._id + secretToken = token
+    // token - secretToken = user._id를 확인인 가능
+
+    //스키마에 있는 user.token을 우리가 만든 token에 집어 넣는다.
+    user.token = token
+    console.log('6번 유저토큰: ',user.token)
+    console.log('7번 토큰: ',token)
+                          //user에는 유저정보가 들어있음
+    user.save(function(err, user) {
+      console.log('8번 user정보: ',user._id)
+      if(err) return cb(err) //에러가 있으면 에러를 전달해주고
+      cb(null, user) //에러가 null이면 user정보를 콜백해준다.
+    })
 }
+
+
+
+
 
 
 

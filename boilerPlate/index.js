@@ -3,6 +3,7 @@ const app = express() //express 함수를 이용해서 새로운 express app을 
 const port = 5000     //포트번호
 
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
 
 const config = require('./config/key')
 
@@ -11,6 +12,12 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 //application/json 타입으로 온 데이터를 분석해서 가져온다.
 app.use(bodyParser.json());
+
+//쿠키에 저정하기 위해서는 express에서 제공!!!하는 
+//cookieparser가 필요하다
+app.use(cookieParser())
+
+//bodyparser 역시 express에서 제공한다.
 
 //유저 모델을 가져온다
 const { User } = require('./models/User')
@@ -66,42 +73,70 @@ app.post('/register',(req,res)=>{
 
 
 app.post('/login',(req,res)=>{
+  console.log("0번 클라이언트에서 입력: ",req.body)
   //1. 데이터베이스 안에서 요청한 E-mail 찾기
   //객체 User안에 있는 User모델을 가져온다.
   //const User = mongoose.model('User',userSchema)
+  //터미널창을 보면 0번과 1번 사이에 몽고 DB연결중.. 이라는 로그창이 보이는데
+  //이는 User.fineOne을 통해서 몽고db에 접속하기 떄문이다.
   
   //요청된 이메일을 데이터베이스에서 있는지 찾는다.
   //email은 데이터베이스에 있는거고
   //req.body.email은 클라이언트에서 요청받은 이메일
                                       //user정보가 들어있음
-  User.findOne({ email: req.body.email}, (err, user)=>{
-    console.log(req.body.email) //클라이언트에서 요청하는
+  User.findOne({ email: req.body.email}, (err, user)=> {
+    console.log('1번 clinet 입력: ',req.body.email) //클라이언트에서 요청하는
+    //1번으로 실행됨
+    console.log('1-1번 DB에 있는 user정보: ',user)
     if(!user){
       return res.json({
         loginSuccess: false,
         message : "제공된 이메일에 해당하는 유저가 없습니다."
-      })
+      });
     }
   //2. 데이트베이스 안에서 요청한 E-mail이 있다면 비밀번호가 같은지 확인
   //요청된 이메일이 데이터 베이스 있다면 비밀번호가 맞는 비밀번호인지 확인
   //user에는 user정보가 들어있음
   //req.body.password는 클라이언트에서 입력한 비밀번호
-                                              //비밀번호가 맞다면 isMatch를 가져옴
+  //comparePasswrod                                              
+                  //클라이언트비밀번호가 맞다면 isMatch를 가져옴
   user.comparePassword(req.body.password, (err, isMatch)=>{
+    console.log('4번 index isMatch: ', isMatch)
     //매소드를 유저 model에서 만듬
-    //비밀번호가 틀리다.
+    // console.log(req.body.password)
     if(!isMatch)
     return res.json({ 
       loginSuccess : false, 
       message: "비밀번호가 틀렸습니다"
     })
+  
     //3.비밀번호가 같다면 Token 생성
-    
+    //토큰을 생성하기 위해서 jsonwebtoken 모듈을 인스톨한다.
+    //https://www.npmjs.com/package/jsonwebtoken
+                            //user에는 토큰이 생성된 유저정보가 있다.
+    user.generateToken((err, user)=>{
+      console.log('9번 user정보: ',user)
+      //매소드를 유저 model에서 만듬
+        if(err) return res.status(400).send(err);
 
+        //토큰을 저장한다. 어디에? 쿠키, 로컬스토리지에 저장하지만
+        //여기서는 쿠키에다가 저장한다.
+        //쿠키에 저정하기 위해서는 express에서 제공하는 cookieparser가 필요하다
+        //현재 user에는 model에 user에서 만들어진 토큰이 들어있다
+        //
+        res.cookie('x_auth: ',user.token)
+          .status(200)
+                                            //user.id는 몽고디비 고유아이디
+          .json({loginSuccess: true, userId: user._id})
+        // Cookies that have not been signed
+
+        // console.log('Cookies: ', req.cookies)
+        // console.log('x_auth: ',user.token)
+        // // Cookies that have been signed
+        // console.log('Signed Cookies: ', req.signedCookies)        
+      })
+    })
   })
-
-
-})
 })
 
 
