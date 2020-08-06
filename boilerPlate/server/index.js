@@ -21,7 +21,7 @@ app.use(cookieParser())
 const { auth } = require('./middleware/auth')
 
 //유저 모델을 가져온다
-const { User } = require('./models/User')
+const { User } = require('models/User')
 // export default 인 것은  {} 없이 가져올수 있습니다
 // 하지만 default 아닌 것들은 {} 해서 가지고 와야 됩니다.
 
